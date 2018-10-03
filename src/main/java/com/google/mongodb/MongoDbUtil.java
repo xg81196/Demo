@@ -27,9 +27,6 @@ import java.util.UUID;
  */
 public class MongoDbUtil {
 
-
-
-
     private MongoDbUtil() {
     }
 
