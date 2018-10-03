@@ -2,12 +2,14 @@ package com.google.mongodb;
 
 
 import com.mongodb.*;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSBuckets;
 import com.mongodb.client.gridfs.GridFSDownloadStream;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import com.mongodb.gridfs.GridFS;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,6 +147,63 @@ public class MongoDbUtil {
     public static MongoDatabase getDatabase(String databaseName) {
         return MongoInstance.client.getDatabase(databaseName);
     }
+
+
+    /**
+     * get current collection's names
+     * @return
+     */
+    public static List<String> getCollectionNames(){
+        List<String> names = new ArrayList<>();
+        for (String name : getDatabase().listCollectionNames()){
+            names.add(name);
+        }
+        if(names != null && names.size()>0){
+            return  names;
+        }else {
+            return null;
+        }
+    }
+
+    /**
+     * get current collection's names by database name
+     * @return
+     */
+    public static List<String> getCollectionNames(String dbName){
+        List<String> names = new ArrayList<>();
+        for (String name : getDatabase(dbName).listCollectionNames()){
+            names.add(name);
+        }
+        if(names != null && names.size()>0){
+            return  names;
+        }else {
+            return new ArrayList<>();
+        }
+    }
+
+
+    /**
+     * insert one Document
+     * @param databaseName
+     * @param collectionName
+     * @param document
+     */
+    public static  void insertOne(String databaseName,String collectionName,Document document){
+        MongoCollection<Document> collection = getDatabase(databaseName).getCollection(collectionName);
+        collection.insertOne(document);
+    }
+
+    /**
+     * insert one Document
+     * @param collectionName
+     * @param document
+     */
+    public static  void insertOne(String collectionName,Document document){
+        MongoCollection<Document> collection = getDatabase().getCollection(collectionName);
+        collection.insertOne(document);
+    }
+
+
 
     /**
      * upload file to mongo
@@ -401,6 +460,7 @@ public class MongoDbUtil {
 
 
 
+
     /**
      * 先上传
      */
@@ -425,9 +485,23 @@ public class MongoDbUtil {
     }
 
     public static void main(String[] args) {
-        String fid = upload("E:\\test\\beizi.mp4");
-        download(fid,"E:/beizi2.mp4");
-        System.out.println(fid);
+//        String fid ="5bb445e491f01239988b8228";
+//        download(fid,"E:/beizi2.pdf");
+//        System.out.println(fid);
+
+//        getCollectionNames().forEach(System.out::println);
+        getCollectionNames("njnjn").forEach(System.out::print);
+
+        Document document = new Document().append("name", "何明喜")
+                .append("description","这个人很懒")
+                .append("age", 20)
+                .append("gender", "man")
+                .append("address", "China");
+        insertOne("student",document);
+
+
+
+
     }
 
 }
